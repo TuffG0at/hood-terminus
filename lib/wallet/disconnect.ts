@@ -121,13 +121,34 @@ export function clearWagmiPersistence() {
   }
 }
 
-/** Whether wagmi has a connection persisted for this browser. */
+/**
+ * Whether wagmi has an actual connection persisted for this browser.
+ *
+ * The cookie's presence is not the question, and treating it as the question
+ * was a bug: wagmi writes `wagmi.store` on mount for everybody, connected or
+ * not. So a first-time visitor with no wallet looked like somebody carrying a
+ * connection in from a previous session, and the guard cleared the cookie and
+ * reloaded the page under them. One wasted reload on a first visit, which is
+ * the worst moment to spend one.
+ *
+ * What matters is whether the store holds a connection, so that is what this
+ * reads.
+ */
 export function hasWagmiPersistence(): boolean {
   try {
-    return WAGMI_KEYS.some((name) =>
-      document.cookie.split(";").some((c) => c.trim().startsWith(`${name}=`)),
-    );
+    const prefix = "wagmi.store=";
+    const raw = document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith(prefix));
+    if (!raw) return false;
+
+    const store: unknown = JSON.parse(decodeURIComponent(raw.slice(prefix.length)));
+    const connections = (store as { state?: { connections?: { value?: unknown } } })
+      ?.state?.connections?.value;
+    return Array.isArray(connections) && connections.length > 0;
   } catch {
+    // Unparseable or blocked. Nothing we can act on, so act on nothing.
     return false;
   }
 }
