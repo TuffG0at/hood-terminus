@@ -255,3 +255,13 @@ byte id, so every request was rejected, while the first candles arrived from the
 server and masked it. The settings icon was absent because it was written as a
 bare `svg` on a 24 unit grid against this file's 16; it is a gear now, generated
 by `design/gear.py` because teeth at equal angles cannot be eyeballed at 17px.
+
+## Repository move
+
+**Date:** October 12, 2026
+
+On October 12 the repository moved to github.com/TuffG0at/hood-terminus. Commit
+authors were set to the project's public identity and a deploy log that should
+never have been committed was removed from history. Commit dates and contents
+are otherwise unchanged; the Import v1 commit has the same tree hash as before,
+d858d41d3270e5d919a5899b162fdb76eb2e0703.
