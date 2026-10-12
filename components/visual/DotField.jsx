@@ -215,6 +215,29 @@ const DotField = memo(({
     }
 
     doResize();
+
+    /**
+     * Watch the box, not the window.
+     *
+     * The dot grid is built from the parent's measured width, and the parent
+     * can change width without the window changing at all: the rail collapsing
+     * or expanding, the page loader being removed, fonts settling, a scrollbar
+     * appearing. When that happened the canvas kept the grid it was given at
+     * mount, so the dots stopped partway across and left a bare strip down the
+     * right-hand side. It showed up on iPad, where the rail collapses and the
+     * box gets wider right after this first runs.
+     *
+     * A ResizeObserver fires for every one of those. The window listener stays
+     * for the one case it does not cover, a device pixel ratio change on a
+     * window dragged between monitors, which alters the backing store without
+     * altering the element's size.
+     */
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(resize);
+    if (observer && canvas.parentElement) observer.observe(canvas.parentElement);
+
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     rafRef.current = requestAnimationFrame(tick);
@@ -228,6 +251,7 @@ const DotField = memo(({
       cancelAnimationFrame(rafRef.current);
       clearInterval(speedInterval);
       clearTimeout(resizeTimer);
+      observer?.disconnect();
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
     };
