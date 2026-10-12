@@ -136,19 +136,35 @@ export function clearWagmiPersistence() {
  */
 export function hasWagmiPersistence(): boolean {
   try {
-    const prefix = "wagmi.store=";
-    const raw = document.cookie
-      .split(";")
-      .map((c) => c.trim())
-      .find((c) => c.startsWith(prefix));
-    if (!raw) return false;
+    return cookieHoldsConnection(document.cookie);
+  } catch {
+    // Site data blocked. Nothing we can act on, so act on nothing.
+    return false;
+  }
+}
 
+/**
+ * The same question, asked of a cookie string rather than the document.
+ *
+ * Split out so it can be tested: the case that caused the bug, a
+ * `wagmi.store` cookie present with an empty connection list, is exactly the
+ * one that is hard to reach through a browser and easy to assert here.
+ */
+export function cookieHoldsConnection(cookie: string): boolean {
+  const prefix = "wagmi.store=";
+  const raw = cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(prefix));
+  if (!raw) return false;
+
+  try {
     const store: unknown = JSON.parse(decodeURIComponent(raw.slice(prefix.length)));
     const connections = (store as { state?: { connections?: { value?: unknown } } })
       ?.state?.connections?.value;
     return Array.isArray(connections) && connections.length > 0;
   } catch {
-    // Unparseable or blocked. Nothing we can act on, so act on nothing.
+    // A cookie we cannot read is not evidence of a connection.
     return false;
   }
 }
