@@ -9,6 +9,7 @@ import {
   getTokenImages,
   isRoutable,
 } from "@/lib/market/gecko";
+import { WIF_POOL } from "@/lib/launchpad/quotes";
 
 export const metadata = {
   title: "Trade",
@@ -22,10 +23,11 @@ export default async function TradePage({
 }: {
   searchParams: Promise<{ pool?: string }>;
 }) {
-  const [{ pool: asked }, top, fresh] = await Promise.all([
+  const [{ pool: asked }, top, fresh, wif] = await Promise.all([
     searchParams,
     getTopPools(),
     getNewPools(),
+    getPool(WIF_POOL),
   ]);
 
   // Two filters, both load-bearing.
@@ -50,6 +52,15 @@ export default async function TradePage({
     })
     .sort((a, b) => (b.liquidityUsd ?? 0) - (a.liquidityUsd ?? 0))
     .slice(0, 60);
+
+  // WIF first, and so the pair the panel opens on. It is the default launch
+  // pairing, so it is the token people arrive here to buy. The feed's lists
+  // do not carry its routable pool; see `WIF_POOL`.
+  if (wif && isRoutable(wif) && wif.quoteSymbol === "WETH") {
+    const at = pools.findIndex((p) => p.address.toLowerCase() === wif.address.toLowerCase());
+    if (at >= 0) pools.splice(at, 1);
+    pools.unshift(wif);
+  }
 
   /**
    * A pool named in the link, so arriving from a token page opens on it.
