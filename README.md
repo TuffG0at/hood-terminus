@@ -5,6 +5,11 @@ The trading terminal for Robinhood Chain. Find new tokens, check who is trading 
 **Live:** https://hood-terminus.vercel.app
 **Chain:** Robinhood Chain mainnet (chain ID 4663)
 
+## Demo
+
+- [Demo video 1](https://youtu.be/VwCyWkIDd7w)
+- [Demo video 2](https://youtu.be/7IyOIpTBC8k)
+
 ## Why it exists
 
 Robinhood Chain went live on July 1, 2026 with Uniswap as its main exchange, and new tokens arrive by the thousand every day. Traders follow them by stitching together a block explorer, a chart site, a wallet and X. Tokens still on a launchpad's bonding curve are worse off: they have no pool yet, so the usual chart sites cannot see them at all.
@@ -27,7 +32,36 @@ Hood Terminus puts discovery, trading, wallet intelligence and launching on one 
 
 Every contract address the app uses was read from the chain and proven, not copied from another network. The method: take a live pool, ask it for its factory and tokens, then confirm the factory returns that same pool. This mattered, because the canonical Uniswap V3 factory address holds a different contract on Robinhood Chain, and using it would have failed silently. The full method is documented in `lib/chain/contracts.ts`.
 
-Launches can be paired against ETH, USDG or Robinhood's tokenized stocks.
+Launches can be paired against WIF, ETH, USDG or Robinhood's tokenized stocks.
+
+## $WIF on Hood Terminus
+
+$WIF (World is Flat) is the default pairing for every token launched here. Somebody launching a token on Hood Terminus is, unless they choose otherwise, creating a new market priced in WIF.
+
+**What WIF does on a WIF-paired token:**
+
+- **Buyers pay in WIF.** Every purchase on the bonding curve is a WIF transfer into the launchpad contract, and every sale pays WIF back out.
+- **Creators earn in WIF.** The creator's share of the 1% trade fee accrues in WIF and is withdrawn as WIF.
+- **Graduation locks WIF into a pool for good.** At 8,000,000 WIF raised, the launchpad opens a Uniswap v3 pool pairing the new token against WIF and mints the liquidity to itself. The contract has no function that withdraws or collects that position, so the WIF in it stays there.
+- **WIF is one tap away.** The trade page opens on WIF, routed through up-v3's WIF/WETH pool, so a new user can go from ETH to WIF to a WIF-paired launch without leaving the app.
+- **Travis checks WIF like anything else.** The pre-trade sell test ranks pools by real trading activity, so a WIF check runs where WIF actually trades.
+
+**The flywheel.** Every launch creates a market that can only be bought with WIF, so new tokens bring their buyers to WIF first. Every graduation takes WIF out of circulation and into permanent liquidity. More launches mean more demand for WIF and a deeper WIF economy, which in turn makes WIF the pairing a new creator wants.
+
+| | |
+| --- | --- |
+| $WIF contract | [`0x5173b8eA6923c2d40267890D45C46a3480954773`](https://robinhoodchain.blockscout.com/address/0x5173b8eA6923c2d40267890D45C46a3480954773) |
+| Launchpad | [`0xe3D28A441E951b5a6Eb71827FdC49564c55775Cc`](https://robinhoodchain.blockscout.com/address/0xe3D28A441E951b5a6Eb71827FdC49564c55775Cc) |
+| WIF enabled as a pairing | [`0xc3af4d43…3a4`](https://robinhoodchain.blockscout.com/tx/0xc3af4d4333e560e242c13c145cf054d52ed02cf613da51addfb00ecbf79fb3a4), block 110,291,057 |
+
+### Proof transactions
+
+| Action | Transaction |
+| --- | --- |
+| Launchpad allows WIF as a pairing (`setQuote`) | [`0xc3af4d43…3a4`](https://robinhoodchain.blockscout.com/tx/0xc3af4d4333e560e242c13c145cf054d52ed02cf613da51addfb00ecbf79fb3a4) |
+| Buy WIF with ETH on the trade page | Pending |
+| Launch a token paired against WIF | Pending |
+| Buy the new token with WIF | Pending |
 
 ## Verify: can I get out?
 
@@ -96,7 +130,7 @@ faults that look like code and are not.
 
 ## Hackathon disclosure
 
-Hood Terminus is entered in Colosseum's Crypto World's Fair, which opened on September 14, 2026.
+Hood Terminus is entered in Colosseum's Crypto World's Fair, which opened on September 14, 2026, and in the World is Flat hackathon, which opened on October 21, 2026.
 
 Version 1 was built between September 3 and September 11, 2026, before the hackathon began, and shipped to production at 10:21 UTC on September 11. The first commit in this repository, "Import v1", is that project as it stood: every file in it was last modified between September 3 and September 11. `_file-dates.txt` in that commit lists the last modified time of every file copied from the original folder, so the dates can be checked. Only generated build output was left out: the compiled contract artifacts, the TypeScript build cache, and a Python bytecode cache. Everything committed after it was built during the hackathon and is listed below.
 
@@ -109,6 +143,14 @@ Version 1 was built between September 3 and September 11, 2026, before the hacka
 - **Plain language, and claims checked against the contract** (October 2026): the launchpad no longer promises fees after graduation, which it never paid, and the fee split is read from the chain rather than written down.
 - **Wallets only** (October 2026): the embedded-wallet sign-in was removed after it proved unable to create a wallet on this app, and the terms and privacy notice were rewritten to match.
 - **A session that ends when you leave** (October 2026): a connected wallet lasts for the browser session and no longer, and Disconnect ends every authorised wallet rather than promoting the next one. Neither was a route to spending, since transactions are signed in the wallet; what was exposed was the address and the portfolio behind it to whoever opened the laptop next.
+
+### Built during the World is Flat hackathon
+
+- **WIF as the default launch pairing** (November 2026): enabled on the live launchpad by the owner, with WIF first in the create form at a graduation of 8,000,000 WIF, about $10,000.
+- **WIF on the trade page and the tokens board** (November 2026): the trade page opens on WIF's routable pool, WIF leads the trending board and turns up in search, and pasting a token address opens that token's busiest market.
+- **Travis tests where people trade** (November 2026): pools that traded in the last day are tried before deeper idle ones. WIF previously came back Unknown, because its deepest listing was a pool nobody trades.
+- **Charts that survive a repeated hour** (November 2026): candles sharing a timestamp are merged, which is what left WIF's 1h chart blank.
+- **Search that clears at once** (November 2026): the board follows the search box in the browser, so clearing a search restores it immediately.
 
 ### Next
 
