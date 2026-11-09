@@ -6,6 +6,8 @@ import { getCurveTokens } from "@/lib/launchpad/curve";
 import { Hero } from "@/components/discover/Hero";
 import { Screener } from "@/components/discover/Screener";
 import { TerminalHeader } from "@/components/discover/TerminalHeader";
+import { WhileSearching } from "@/components/discover/live-query";
+import { WIF_MARKET } from "@/lib/launchpad/quotes";
 import { Section } from "@/components/primitives/Section";
 import {  IconScreener,
 } from "@/components/primitives/SectionIcons";
@@ -15,6 +17,7 @@ import { ChainStats } from "@/components/market/ChainStats";
 import { IndexedResults } from "@/components/market/IndexedResults";
 import {
   getNewPools,
+  getPool,
   getTopPools,
   getTrendingPools,
   screen,  WINDOWS,
@@ -89,11 +92,19 @@ export default async function DiscoverPage({ searchParams }: Props) {
   // The screener and the launch feed draw on different populations. Sorting the
   // top-volume pools by age would only surface launches that already made it,
   // which is the opposite of what someone hunting new pairs wants.
-  const [top, fresh, trending] = await Promise.all([
+  const [feedTop, fresh, feedTrending, wif] = await Promise.all([
     getTopPools(),
     getNewPools(),
     getTrendingPools(),
+    getPool(WIF_MARKET),
   ]);
+
+  // WIF leads the trending board and is in every search. It is the default
+  // launch pairing, and the feed's lists do not always carry it, so somebody
+  // looking for it on the tokens page found nothing. See `WIF_MARKET`.
+  const pinned = wif ? [wif] : [];
+  const top = dedupe([...pinned, ...feedTop]);
+  const trending = dedupe([...pinned, ...feedTrending]);
 
   /**
    * A search looks across everything, not just the board in view.
@@ -241,7 +252,9 @@ export default async function DiscoverPage({ searchParams }: Props) {
             </Suspense>
           </Card>
           {/* Anything our own index knows about that the feed did not. */}
-          <IndexedResults pools={alsoFound} />
+          <WhileSearching query={query}>
+            <IndexedResults pools={alsoFound} />
+          </WhileSearching>
         </Reveal>
       </Section>
 

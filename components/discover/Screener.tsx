@@ -12,6 +12,7 @@ import {
   type Window,
 } from "@/lib/market/gecko";
 import type { CurveToken } from "@/lib/launchpad/curve";
+import { useLiveQuery } from "./live-query";
 
 /**
  * The board, filtered in the browser.
@@ -59,6 +60,9 @@ export function Screener({
   initialMinLiquidity: number;
   initialQuote: string;
 }) {
+  // The box, live, rather than the query the server rendered with. Clearing
+  // the search restores the board at once instead of after a round trip.
+  const liveQuery = useLiveQuery(query);
   const [sort, setSort] = useState<ScreenSort>(initialSort);
   const [timeWindow, setTimeWindow] = useState<Window>(initialWindow);
   const [minLiquidity, setMinLiquidity] = useState(initialMinLiquidity);
@@ -91,14 +95,14 @@ export function Screener({
           : top.length > 0
             ? top
             : fresh;
-    const population = query.trim() ? everything : board;
+    const population = liveQuery.trim() ? everything : board;
 
     return screen(population, {
       window: timeWindow,
       sort,
       minLiquidityUsd: minLiquidity,
       limit: showAll ? 250 : 50,
-      query,
+      query: liveQuery,
       quote,
     });
   }, [
@@ -106,7 +110,7 @@ export function Screener({
     timeWindow,
     minLiquidity,
     quote,
-    query,
+    liveQuery,
     showAll,
     top,
     fresh,

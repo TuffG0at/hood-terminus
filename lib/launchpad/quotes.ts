@@ -90,6 +90,15 @@ export const WIF = "0x5173b8ea6923c2d40267890d45c46a3480954773" as const;
  */
 export const WIF_POOL = "0xb0c724e6c234a08add4b7697138f667c97dee5aa" as const;
 
+/**
+ * WIF's main market: Pons's WIF/WETH pool, about $96k deep and $120k a day on
+ * 9 November 2026. What the tokens board shows for WIF, because it is where
+ * the price is made. Not routable here, which is why buying goes through
+ * `WIF_POOL` instead.
+ */
+export const WIF_MARKET =
+  "0x71ef4106340f0a3b9c19ec994eef4fc44a1d2513f38faac39d7636b156548c79" as const;
+
 export const QUOTE_ASSETS: QuoteAsset[] = [
   {
     address: WIF,

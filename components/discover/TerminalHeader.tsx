@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { resetLiveQuery, setLiveQuery } from "./live-query";
 
 /**
  * The top of the terminal: what this is, and the one box you type into.
@@ -23,7 +24,13 @@ export function TerminalHeader({ initialQuery }: { initialQuery: string }) {
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const [text, setText] = useState(initialQuery);
+  const [text, setRawText] = useState(initialQuery);
+
+  /** Every edit reaches the board at once; see `live-query`. */
+  function setText(next: string) {
+    setRawText(next);
+    setLiveQuery(next);
+  }
 
   // Follow the URL when it changes under us, for a back button or a shared
   // link. Adjusted during render rather than in an effect, which would render
@@ -31,8 +38,13 @@ export function TerminalHeader({ initialQuery }: { initialQuery: string }) {
   const [lastQuery, setLastQuery] = useState(initialQuery);
   if (initialQuery !== lastQuery) {
     setLastQuery(initialQuery);
-    setText(initialQuery);
+    setRawText(initialQuery);
   }
+
+  // The board follows the URL too, for the back button, and forgets the box
+  // when this page unmounts so the next visit starts from the server's query.
+  useEffect(() => setLiveQuery(initialQuery), [initialQuery]);
+  useEffect(() => resetLiveQuery, []);
 
   /**
    * A pasted address is a destination, not a search.
@@ -94,6 +106,9 @@ export function TerminalHeader({ initialQuery }: { initialQuery: string }) {
           <input
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape" && text !== "") setText("");
+            }}
             placeholder="Paste a token or search a ticker"
             spellCheck={false}
             autoComplete="off"
@@ -111,17 +126,39 @@ export function TerminalHeader({ initialQuery }: { initialQuery: string }) {
             </button>
           )}
           {!isAddress && text !== "" && (
+            // No `tap-44` here: its `position: relative` overrode `absolute`,
+            // which dropped the button below the box as tiny grey text. The
+            // button is its own 40px target instead.
             <button
               type="button"
               onClick={() => setText("")}
-              className="tap-44 absolute top-1/2 right-3 -translate-y-1/2 rounded-md text-micro text-ink-3 transition-colors duration-100 hover:text-ink"
+              aria-label="Clear search"
+              className="absolute top-1/2 right-1.5 flex h-9 items-center gap-1.5 -translate-y-1/2 rounded-md border border-line bg-surface px-2.5 text-micro font-medium text-ink-2 transition-colors duration-100 hover:border-green-line hover:text-ink"
             >
+              <IconClear />
               Clear
             </button>
           )}
         </form>
       </div>
     </header>
+  );
+}
+
+function IconClear() {
+  return (
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
   );
 }
 
