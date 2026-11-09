@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { screen, type Pool } from "@/lib/market/gecko";
+import { mergeSameTime, screen, type Candle, type Pool } from "@/lib/market/gecko";
 import sample from "@/lib/market/__fixtures__/pools.sample.json";
 
 /**
@@ -112,5 +112,25 @@ describe("a pool with no market stays off the change boards", () => {
         rows[i].liquidityUsd ?? 0,
       );
     }
+  });
+});
+
+describe("mergeSameTime", () => {
+  const c = (time: number, open: number, high: number, low: number, close: number, volume: number): Candle => ({
+    time, open, high, low, close, volume,
+  });
+
+  it("folds a repeated timestamp into one candle", () => {
+    // WIF's hourly series on Pons carried one repeated hour, which blanked the chart.
+    const merged = [c(1, 1, 2, 1, 2, 5), c(2, 2, 3, 1.5, 2.5, 4), c(2, 2.5, 4, 2, 3, 6)].reduce(
+      mergeSameTime,
+      [] as Candle[],
+    );
+    expect(merged).toEqual([c(1, 1, 2, 1, 2, 5), c(2, 2, 4, 1.5, 3, 10)]);
+  });
+
+  it("leaves a clean series alone", () => {
+    const series = [c(1, 1, 1, 1, 1, 1), c(2, 1, 1, 1, 1, 1)];
+    expect(series.reduce(mergeSameTime, [] as Candle[])).toEqual(series);
   });
 });

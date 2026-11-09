@@ -491,7 +491,33 @@ export async function getCandles(
       }))
       // The API returns newest first; charting libraries want oldest first.
       .sort((a, b) => a.time - b.time)
+      .reduce(mergeSameTime, [])
   );
+}
+
+/**
+ * Folds a candle into the one before it when both carry the same timestamp.
+ *
+ * The feed occasionally returns two rows for one bucket. WIF's hourly series on
+ * Pons did, and the charting library refuses a series whose times are not
+ * strictly ascending, so one repeated hour left the 1h chart blank while every
+ * other timeframe drew. The pair is one period: widest range, summed volume,
+ * the earlier row's open and the later row's close.
+ */
+export function mergeSameTime(out: Candle[], c: Candle): Candle[] {
+  const prev = out.at(-1);
+  if (prev && prev.time === c.time) {
+    out[out.length - 1] = {
+      ...prev,
+      high: Math.max(prev.high, c.high),
+      low: Math.min(prev.low, c.low),
+      close: c.close,
+      volume: prev.volume + c.volume,
+    };
+  } else {
+    out.push(c);
+  }
+  return out;
 }
 
 /**

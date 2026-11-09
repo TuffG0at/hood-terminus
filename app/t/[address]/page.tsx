@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { rankPools } from "@/lib/verify/venue";
 import { CurveTokenPage } from "@/components/create/CurveTokenPage";
 import { getCurveToken } from "@/lib/launchpad/curve";
 import { Board } from "@/components/market/Board";
@@ -125,6 +126,14 @@ export default async function TokenPage({ params }: Params) {
   if (!found) {
     const curve = await getCurveToken(address);
     if (curve) return <CurveTokenPage token={curve} />;
+
+    /**
+     * Last, a token address rather than a pool. The search box invites
+     * pasting a token, and pasting WIF's contract here was a 404. Its busiest
+     * market is the page it means, ranked the way Verify ranks venues.
+     */
+    const [market] = rankPools(await getPoolsForToken(address));
+    if (market) redirect(`/t/${market.address}`);
     notFound();
   }
   const { pool, logo } = found;
