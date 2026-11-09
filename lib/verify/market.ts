@@ -1,5 +1,6 @@
 import "server-only";
 import type { Address } from "viem";
+import { rankPools } from "./venue";
 
 /**
  * What GeckoTerminal knows about a token and its pools.
@@ -97,8 +98,9 @@ export type MarketPool = {
 };
 
 /**
- * The token's pools, deepest first. Null means the market data could not be
- * fetched; an empty list means it was fetched and the token has no pools.
+ * The token's pools, busiest and deepest first (see `rankPools`). Null means
+ * the market data could not be fetched; an empty list means it was fetched and
+ * the token has no pools.
  */
 export async function tokenPools(token: Address): Promise<MarketPool[] | null> {
   const body = await gecko(`/tokens/${token}/pools?include=base_token,quote_token&page=1`);
@@ -146,7 +148,7 @@ export async function tokenPools(token: Address): Promise<MarketPool[] | null> {
     });
   }
 
-  return pools.sort((x, y) => (y.liquidityUsd ?? 0) - (x.liquidityUsd ?? 0));
+  return rankPools(pools);
 }
 
 // The table and the naming live in ./venue, which carries no server boundary,

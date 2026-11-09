@@ -43,6 +43,8 @@ type Quote = {
 };
 
 const QUOTES: Quote[] = [
+  // World is Flat, added 9 November 2026 at $0.00128. The default pairing.
+  { symbol: "WIF", address: "0x5173b8ea6923c2d40267890d45c46a3480954773", decimals: 18, graduation: 8_000_000, usd: 0.00128 },
   { symbol: "ETH", address: "0x0000000000000000000000000000000000000000", decimals: 18, graduation: 4, usd: 2475 },
   { symbol: "USDG", address: "0x5fc5360d0400a0fd4f2af552add042d716f1d168", decimals: 6, graduation: 10_000, usd: 1 },
   { symbol: "NVDA", address: "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec", decimals: 18, graduation: 45, usd: 224.45 },

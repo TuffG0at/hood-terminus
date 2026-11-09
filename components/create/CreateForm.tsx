@@ -23,7 +23,7 @@ import {
 } from "@/lib/launchpad";
 import { LAUNCH_FEE_ETH } from "@/lib/chain/launch-fee";
 import {
-  NATIVE,
+  WIF,
   QUOTE_ASSETS,
   MAX_CREATOR_TAX_PERCENT,
   DEFAULT_CREATOR_SHARE_PERCENT,
@@ -144,8 +144,11 @@ export function CreateForm() {
   const [supplyIndex, setSupplyIndex] = useState(SUPPLY_STOPS.length - 1);
   const [customSupply, setCustomSupply] = useState<string | null>(null);
   const [feeRecipient, setFeeRecipient] = useState("");
-  /** What the token trades against. Fixed at launch and never changeable. */
-  const [quote, setQuote] = useState<`0x${string}`>(NATIVE);
+  /**
+   * What the token trades against. Fixed at launch and never changeable.
+   * WIF by default: see `WIF` in the pairings catalogue for why.
+   */
+  const [quote, setQuote] = useState<`0x${string}`>(WIF);
   /**
    * The creator's own cut of every trade, as a percentage.
    *

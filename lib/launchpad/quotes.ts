@@ -64,7 +64,29 @@ export type QuoteAsset = {
 
 export const NATIVE = "0x0000000000000000000000000000000000000000" as const;
 
+/**
+ * World is Flat, the chain's own memecoin, and the default pairing.
+ *
+ * Read off the chain on 9 November 2026: 18 decimals, a fixed supply of about
+ * one billion, no owner. Graduation is eight million WIF, roughly ten thousand
+ * dollars at $0.00128, so a WIF curve is the same distance as every other one.
+ *
+ * Default because it is the pairing that compounds. A token paired against WIF
+ * is bought with WIF, pays its creator in WIF, and graduates into a Uniswap
+ * pool against WIF whose position the launchpad holds and never withdraws.
+ * Every launch is standing demand for WIF and a little more of it locked in.
+ */
+export const WIF = "0x5173b8ea6923c2d40267890d45c46a3480954773" as const;
+
 export const QUOTE_ASSETS: QuoteAsset[] = [
+  {
+    address: WIF,
+    symbol: "WIF",
+    decimals: 18,
+    logo: "/pairs/wif.png",
+    tint: "#a07a3c",
+    graduation: 8_000_000,
+  },
   {
     address: NATIVE,
     symbol: robinhoodChain.nativeCurrency.symbol,
@@ -127,7 +149,9 @@ export function quoteAsset(address: string): QuoteAsset {
   const found = QUOTE_ASSETS.find(
     (q) => q.address.toLowerCase() === address.toLowerCase(),
   );
-  return found ?? QUOTE_ASSETS[0];
+  // Native ETH, named rather than taken from the front of the list: WIF leads
+  // the list now, and an unknown pairing must not be drawn as WIF.
+  return found ?? QUOTE_ASSETS.find((q) => q.address === NATIVE)!;
 }
 
 /** The creator's own tax, capped where the contract caps it. */
@@ -175,6 +199,8 @@ export const KNOWN_TOKEN_LOGOS: Record<string, string> = {
   // Native ETH, under both names it goes by in this codebase.
   "0x0000000000000000000000000000000000000000": "/pairs/eth.svg",
   native: "/pairs/eth.svg",
+  // World is Flat, the default pairing.
+  "0x5173b8ea6923c2d40267890d45c46a3480954773": "/pairs/wif.png",
   "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec": "/pairs/nvda.svg",
   "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea": "/pairs/spcx.svg",
   "0xc0d6457c16cc70d6790dd43521c899c87ce02f35": "/pairs/meta.svg",

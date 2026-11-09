@@ -19,6 +19,31 @@ export const LAUNCHPAD_DEXES: Record<string, string> = {
   "mint-club-robinhood": "Mint Club",
 };
 
+type Ranked = {
+  liquidityUsd: number | null;
+  buys24h: number | null;
+  sells24h: number | null;
+};
+
+/**
+ * The order to try a token's pools in: pools that traded today, deepest first,
+ * then the idle ones, deepest first.
+ *
+ * Depth alone was the old rule, and listed depth can be fiction. WIF's deepest
+ * listing was an mmETH pool reported at $2.4M with no trades at all, and the
+ * test buy there reverted, so the chain's own memecoin came back Unknown while
+ * $120k a day traded on Pons. A pool where nobody trades is not where a sell
+ * would go, so it is not where the sell is tested.
+ */
+export function rankPools<T extends Ranked>(pools: T[]): T[] {
+  const traded = (p: Ranked) => (p.buys24h ?? 0) + (p.sells24h ?? 0) > 0;
+  return [...pools].sort(
+    (x, y) =>
+      Number(traded(y)) - Number(traded(x)) ||
+      (y.liquidityUsd ?? 0) - (x.liquidityUsd ?? 0),
+  );
+}
+
 /**
  * A name for an exchange that can be read aloud.
  *
