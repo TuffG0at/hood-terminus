@@ -9,7 +9,8 @@ import {
   getTokenImages,
   isRoutable,
 } from "@/lib/market/gecko";
-import { WIF_POOL } from "@/lib/launchpad/quotes";
+import { WIF, WIF_POOL } from "@/lib/launchpad/quotes";
+import type { Pool } from "@/lib/market/gecko";
 
 export const metadata = {
   title: "Trade",
@@ -56,11 +57,13 @@ export default async function TradePage({
   // WIF first, and so the pair the panel opens on. It is the default launch
   // pairing, so it is the token people arrive here to buy. The feed's lists
   // do not carry its routable pool; see `WIF_POOL`.
-  if (wif && isRoutable(wif) && wif.quoteSymbol === "WETH") {
-    const at = pools.findIndex((p) => p.address.toLowerCase() === wif.address.toLowerCase());
-    if (at >= 0) pools.splice(at, 1);
-    pools.unshift(wif);
-  }
+  // When the lookup is rate limited, the pool is still known, so WIF is listed
+  // from what the chain says about it rather than dropped. Quotes come from the
+  // pool's own state, so nothing the feed adds is needed to trade.
+  const wifRow = wif && isRoutable(wif) && wif.quoteSymbol === "WETH" ? wif : WIF_FALLBACK;
+  const at = pools.findIndex((p) => p.address.toLowerCase() === wifRow.address.toLowerCase());
+  if (at >= 0) pools.splice(at, 1);
+  pools.unshift(wifRow);
 
   /**
    * A pool named in the link, so arriving from a token page opens on it.
@@ -113,3 +116,26 @@ export default async function TradePage({
     </Section>
   );
 }
+
+/** WIF's routable pool as the chain describes it, for when the feed cannot. */
+const WIF_FALLBACK: Pool = {
+  address: WIF_POOL,
+  name: "WIF / WETH 1%",
+  symbol: "WIF",
+  quoteSymbol: "WETH",
+  baseTokenAddress: WIF,
+  imageUrl: "/pairs/wif.png",
+  priceUsd: null,
+  liquidityUsd: null,
+  marketCapUsd: null,
+  volume: { "5m": null, "1h": null, "6h": null, "24h": null },
+  volume24hUsd: null,
+  change: { "5m": null, "1h": null, "6h": null, "24h": null },
+  change5m: null,
+  change1h: null,
+  change24h: null,
+  buys24h: null,
+  sells24h: null,
+  createdAt: null,
+  dex: "up-v3",
+};
