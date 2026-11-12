@@ -85,10 +85,10 @@ export function CurveTokenPage({ token }: { token: CurveToken }) {
                 value={
                   token.priceEth === null
                     ? "-"
-                    : `${token.priceEth.toExponential(3)} ETH`
+                    : `${token.priceEth.toExponential(3)} ${asset.symbol}`
                 }
               />
-              <Row label="Raised" value={`${token.raisedEth.toFixed(4)} ETH`} />
+              <Row label="Raised" value={`${token.raisedEth.toFixed(4)} ${asset.symbol}`} />
               <Row
                 label="Creator"
                 value={truncateAddress(token.creator, 6)}

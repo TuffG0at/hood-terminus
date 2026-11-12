@@ -300,7 +300,7 @@ export function CurvePanel({ token }: { token: CurveToken }) {
             className="tnum w-full rounded-md border border-line bg-surface-2 px-3 py-3 pr-16 text-lead text-ink placeholder:text-ink-3 focus:border-green focus:outline-none"
           />
           <span className="absolute inset-y-0 right-3 flex items-center text-body text-ink-3">
-            {side === "buy" ? "ETH" : token.symbol}
+            {side === "buy" ? quoteAsset(token.quote).symbol : token.symbol}
           </span>
         </div>
       </div>
