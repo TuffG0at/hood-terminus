@@ -52,13 +52,27 @@ export function encodePath(tokenIn: Address, fee: number, tokenOut: Address): He
   ]);
 }
 
+/**
+ * V3_SWAP_EXACT_IN's input: recipient, amountIn, amountOutMin, path,
+ * payerIsUser, and a per-hop price floor list.
+ *
+ * The sixth field is what the router on this chain expects, and it is read
+ * from real trades through it. Leaving it off does not fail cleanly: a
+ * two-pool path happens to decode, while a one-pool path reverts with
+ * `SliceOutOfBounds()`. Every trade this panel builds is one pool, so every
+ * one of them failed. It is sent empty, which means no per-hop floors; the
+ * overall `amountOutMin` still protects the trade.
+ */
 const SWAP_INPUT = [
   { type: "address" },
   { type: "uint256" },
   { type: "uint256" },
   { type: "bytes" },
   { type: "bool" },
+  { type: "uint256[]" },
 ] as const;
+
+const NO_HOP_FLOORS: readonly bigint[] = [];
 
 const TRANSFER_INPUT = [{ type: "address" }, { type: "uint256" }] as const;
 
@@ -105,6 +119,7 @@ export function buildBuy({
       minAmountOut,
       encodePath(weth, fee, token),
       false,
+      NO_HOP_FLOORS,
     ]),
   ];
 
@@ -151,6 +166,7 @@ export function buildSell({
       minAmountOut,
       encodePath(token, fee, weth),
       true,
+      NO_HOP_FLOORS,
     ]),
     encodeAbiParameters(TRANSFER_INPUT, [MSG_SENDER, minAmountOut]),
   ];

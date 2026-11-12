@@ -120,7 +120,7 @@ export default async function TradePage({
 /** WIF's routable pool as the chain describes it, for when the feed cannot. */
 const WIF_FALLBACK: Pool = {
   address: WIF_POOL,
-  name: "WIF / WETH 1%",
+  name: "WIF / WETH 0.3%",
   symbol: "WIF",
   quoteSymbol: "WETH",
   baseTokenAddress: WIF,
@@ -137,5 +137,5 @@ const WIF_FALLBACK: Pool = {
   buys24h: null,
   sells24h: null,
   createdAt: null,
-  dex: "up-v3",
+  dex: "uniswap-v3-robinhood",
 };

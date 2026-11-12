@@ -79,16 +79,17 @@ export const NATIVE = "0x0000000000000000000000000000000000000000" as const;
 export const WIF = "0x5173b8ea6923c2d40267890d45c46a3480954773" as const;
 
 /**
- * Where WIF is bought in this app: up-v3's WIF/WETH 1% pool, about $28.7k deep
- * on 9 November 2026.
+ * Where WIF is bought in this app: Uniswap v3's WIF/WETH 0.3% pool.
  *
- * The deepest WIF market is on Pons, which the router cannot reach, and the
- * canonical Uniswap v3 WIF/WETH pool is drained on the ETH side. This is the
- * deepest one a swap here can actually fill against. Pinned on the trade page
- * because the market feed's top and new lists do not carry it, and a WIF
- * pairing nobody can get WIF for inside the app is half a feature.
+ * Not the deepest WIF market, but the deepest one the router can fill. Pons
+ * (the main market) and up-v3 (about $28.7k) are both out of its reach: it
+ * only finds pools made by Uniswap's own factory. Of Uniswap's two WIF pools,
+ * the 1% one has no liquidity in range. On 12 November 2026 this one filled
+ * 0.0003 ETH for about 435 WIF in simulation, near the market price. Pinned on
+ * the trade page because the market feed's top and new lists do not carry it,
+ * and a WIF pairing nobody can get WIF for inside the app is half a feature.
  */
-export const WIF_POOL = "0xb0c724e6c234a08add4b7697138f667c97dee5aa" as const;
+export const WIF_POOL = "0xa66c4c0a87a03be476b03c7f3675384cdc94a80f" as const;
 
 /**
  * WIF's main market: Pons's WIF/WETH pool, about $96k deep and $120k a day on

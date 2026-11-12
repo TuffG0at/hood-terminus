@@ -103,9 +103,12 @@ export type Pool = {
  */
 export const ROUTABLE_DEXES = new Set([
   "uniswap-v3-robinhood",
-  "ramses-v3-robinhood",
-  "up-v3",
 ]);
+// Ramses v3 and up-v3 were listed here and should not have been. They share
+// the pool interface, so they quote, but the router derives a pool's address
+// from Uniswap's own factory. Given a fork's token and fee it lands on
+// Uniswap's pool for that pair, if there is one, and the trade fills there at a
+// different price than the one quoted, or reverts. Checked 2026-11-12.
 
 export function isRoutable(pool: Pool): boolean {
   return pool.dex !== null && ROUTABLE_DEXES.has(pool.dex);

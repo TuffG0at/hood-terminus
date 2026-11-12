@@ -665,10 +665,23 @@ function readableError(e: unknown): string {
   if (text.includes("user rejected") || text.includes("user denied")) {
     return "You rejected the transaction.";
   }
-  if (text.includes("v3toosmall") || text.includes("too little received")) {
+  if (
+    text.includes("v3toolittlereceived") ||
+    text.includes("v3toosmall") ||
+    text.includes("too little received") ||
+    // V3TooLittleReceived(), when viem cannot name it.
+    text.includes("0x39d35496")
+  ) {
     return "Price moved past your slippage. Raise it or trade a smaller size.";
   }
-  if (text.includes("transaction deadline passed") || text.includes("deadline")) {
+  // Matched on the error's own name or selector only. A bare "deadline" also
+  // matches the `execute(..., uint256 deadline)` signature viem prints with
+  // every router revert, which labelled all of them "quote expired".
+  if (
+    text.includes("transactiondeadlinepassed") ||
+    text.includes("transaction deadline passed") ||
+    text.includes("0x5bf6f916")
+  ) {
     return "The quote expired. Try again.";
   }
   if (text.includes("insufficient")) {

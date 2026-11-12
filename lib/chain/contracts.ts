@@ -38,8 +38,21 @@ export const CONTRACTS = {
    */
   weth: "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
 
-  /** Uniswap's UniversalRouter. 19,500 bytes, at the canonical address. */
-  universalRouter: "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+  /**
+   * Uniswap's UniversalRouter as deployed for this chain. 24,380 bytes.
+   *
+   * Its bytecode embeds this chain's WETH, the V3 factory above and Permit2,
+   * and it is the router real traders here go through. It is the newer
+   * UniversalRouter whose V3 swap input carries a sixth field; see
+   * `SWAP_INPUT` in `lib/trade/router.ts`.
+   *
+   * NOT the copy at the canonical 0x66a9893c… address. That one was deployed
+   * with Ethereum mainnet constants (mainnet WETH, which has no code here, and
+   * the decoy factory below), so every swap through it reverts. Found
+   * 2026-11-12, when a WIF buy failed and every listed token failed the same
+   * way in simulation.
+   */
+  universalRouter: "0x204faca1764b154221e35c0d20abb3c525710498",
 
   /** Permit2. 9,153 bytes, matching the canonical deployment exactly. */
   permit2: "0x000000000022d473030f116ddee9f6b43ac78ba3",
@@ -71,6 +84,8 @@ export const ROUTED_AMM = "uniswap-v3" as const;
 export const DECOYS = {
   notV3Factory: "0x1f98431c8ad98523631ae4a59f267346ea31f984",
   notV3QuoterV2: "0x61ffe014ba17989e743c5f6cb21bf9697530b21e",
+  /** A UniversalRouter built with mainnet constants. Reverts on every swap. */
+  notUniversalRouter: "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
 } as const;
 
 /**
