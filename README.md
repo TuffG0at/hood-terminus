@@ -61,7 +61,7 @@ $WIF (World is Flat) is the default pairing for every token launched here. Someb
 | Launchpad allows WIF as a pairing (`setQuote`) | [`0xc3af4d43…3a4`](https://robinhoodchain.blockscout.com/tx/0xc3af4d4333e560e242c13c145cf054d52ed02cf613da51addfb00ecbf79fb3a4) |
 | Buy WIF with ETH on the trade page (0.0003 ETH for 427.89 WIF) | [`0x67d36dce…1cf7`](https://robinhoodchain.blockscout.com/tx/0x67d36dce946a90f04ca061251849c435b7143e1cde725e678057bff9d2101cf7) |
 | Launch a token paired against WIF ([SPIRIT](https://hood-terminus.vercel.app/t/0xd621dC451A1e1A9A59095809b2b1D72FAac9B144)) | [`0x60d3fbc5…9f02`](https://robinhoodchain.blockscout.com/tx/0x60d3fbc545b2a125b789fd8a619f0c9f93af49194181d01605b9f4da16319f02) |
-| Buy the new token with WIF | Pending |
+| Buy the new token with WIF (100 WIF for 25,332.53 SPRT) | [`0xa3e38c20…b02e`](https://robinhoodchain.blockscout.com/tx/0xa3e38c2060d57f9ccda15de104bf95968bb0955e8a141100d381dcf38eafb02e) |
 
 ## Verify: can I get out?
 
