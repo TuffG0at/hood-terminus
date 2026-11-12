@@ -43,7 +43,7 @@ $WIF (World is Flat) is the default pairing for every token launched here. Someb
 - **Buyers pay in WIF.** Every purchase on the bonding curve is a WIF transfer into the launchpad contract, and every sale pays WIF back out.
 - **Creators earn in WIF.** The creator's share of the 1% trade fee accrues in WIF and is withdrawn as WIF.
 - **Graduation locks WIF into a pool for good.** At 8,000,000 WIF raised, the launchpad opens a Uniswap v3 pool pairing the new token against WIF and mints the liquidity to itself. The contract has no function that withdraws or collects that position, so the WIF in it stays there.
-- **WIF is one tap away.** The trade page opens on WIF, routed through up-v3's WIF/WETH pool, so a new user can go from ETH to WIF to a WIF-paired launch without leaving the app.
+- **WIF is one tap away.** The trade page opens on WIF, routed through Uniswap v3's WIF/WETH pool, so a new user can go from ETH to WIF to a WIF-paired launch without leaving the app.
 - **Travis checks WIF like anything else.** The pre-trade sell test ranks pools by real trading activity, so a WIF check runs where WIF actually trades.
 
 **The flywheel.** Every launch creates a market that can only be bought with WIF, so new tokens bring their buyers to WIF first. Every graduation takes WIF out of circulation and into permanent liquidity. More launches mean more demand for WIF and a deeper WIF economy, which in turn makes WIF the pairing a new creator wants.
@@ -59,8 +59,8 @@ $WIF (World is Flat) is the default pairing for every token launched here. Someb
 | Action | Transaction |
 | --- | --- |
 | Launchpad allows WIF as a pairing (`setQuote`) | [`0xc3af4d43…3a4`](https://robinhoodchain.blockscout.com/tx/0xc3af4d4333e560e242c13c145cf054d52ed02cf613da51addfb00ecbf79fb3a4) |
-| Buy WIF with ETH on the trade page | Pending |
-| Launch a token paired against WIF | Pending |
+| Buy WIF with ETH on the trade page (0.0003 ETH for 427.89 WIF) | [`0x67d36dce…1cf7`](https://robinhoodchain.blockscout.com/tx/0x67d36dce946a90f04ca061251849c435b7143e1cde725e678057bff9d2101cf7) |
+| Launch a token paired against WIF ([SPIRIT](https://hood-terminus.vercel.app/t/0xd621dC451A1e1A9A59095809b2b1D72FAac9B144)) | [`0x60d3fbc5…9f02`](https://robinhoodchain.blockscout.com/tx/0x60d3fbc545b2a125b789fd8a619f0c9f93af49194181d01605b9f4da16319f02) |
 | Buy the new token with WIF | Pending |
 
 ## Verify: can I get out?
